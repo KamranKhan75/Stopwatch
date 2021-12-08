@@ -1,77 +1,8 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import moment from 'moment';
-
-function Timer({interval, style}) {
-  const pad = n => (n < 10 ? '0' + n : n);
-  const duration = moment.duration(interval);
-  const centiseconds = Math.floor(duration.milliseconds() / 10);
-  return (
-    <View style={styles.timerContainer}>
-      <Text style={style}>{pad(duration.minutes())}:</Text>
-      <Text style={style}>{pad(duration.seconds())},</Text>
-      <Text style={style}>{pad(centiseconds)}</Text>
-    </View>
-  );
-}
-
-function RoundButton({title, color, background, onPress, disabled}) {
-  return (
-    <TouchableOpacity
-      onPress={() => !disabled && onPress()}
-      style={[styles.button, {backgroundColor: background}]}
-      activeOpacity={disabled ? 1.0 : 0.7}>
-      <View style={styles.buttonBorder}>
-        <Text style={[styles.buttonTitle, {color}]}>{title}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-function Lap({number, interval, fastest, slowest}) {
-  const lapStyle = [
-    styles.lapText,
-    fastest && styles.fastest,
-    slowest && styles.slowest,
-  ];
-  return (
-    <View style={styles.lap}>
-      <Text style={lapStyle}>Lap {number}</Text>
-      <Timer style={[lapStyle, styles.lapTimer]} interval={interval} />
-    </View>
-  );
-}
-
-function LapsTable({laps, timer}) {
-  const finishedLaps = laps.slice(1);
-  let min = Number.MAX_SAFE_INTEGER;
-  let max = Number.MIN_SAFE_INTEGER;
-  if (finishedLaps.length >= 2) {
-    finishedLaps.forEach(lap => {
-      if (lap < min) min = lap;
-      if (lap > max) max = lap;
-    });
-  }
-  return (
-    <ScrollView style={styles.scrollView}>
-      {laps.map((lap, index) => (
-        <Lap
-          number={laps.length - index}
-          key={laps.length - index}
-          interval={index === 0 ? timer + lap : lap}
-          fastest={lap === min}
-          slowest={lap === max}
-        />
-      ))}
-    </ScrollView>
-  );
-}
+import {StyleSheet, View} from 'react-native';
+import Timer from './src/components/Stopwatch/Timer';
+import RoundButton from './src/components/Stopwatch/RoundButton';
+import LapsTable from './src/components/Stopwatch/LapsTable';
 
 function ButtonsRow({children}) {
   return <View style={styles.buttonsRow}>{children}</View>;
@@ -80,12 +11,12 @@ const App = () => {
   const [start, setStart] = useState(0);
   const [now, setNow] = useState(0);
   const [laps, setLaps] = useState([]);
-  let timerInterval =useRef(null);
+  let timerInterval = useRef(null);
 
   useEffect(() => {
     return () => {
       clearInterval(timerInterval.current);
-    }; 
+    };
   }, []);
 
   const startTimer = () => {
@@ -191,7 +122,7 @@ const App = () => {
   );
 };
 
-export default App
+export default App;
 
 const styles = StyleSheet.create({
   container: {
@@ -255,9 +186,4 @@ const styles = StyleSheet.create({
   slowest: {
     color: '#CC3531',
   },
-  timerContainer: {
-    flexDirection: 'row',
-  },
 });
-
-
